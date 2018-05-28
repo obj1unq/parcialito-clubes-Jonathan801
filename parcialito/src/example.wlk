@@ -22,6 +22,9 @@ class Club{
 	method sociosDestacados()=actividadesDelClub.map({actividad=>actividad.socioDestacado()})
 	method sociosDestacadosYEstrellas()=self.sociosDestacados().filter({socio=>socio.soySocioEstrella()})
 	method clubPrestigioso()=actividadesDelClub.any({actividad=>actividad.esPrestigioso()})
+	method eliminarSocio(socio){
+		actividadesDelClub.forEach({actividad=>actividad.eliminarSocio(socio)})
+	}
 }
 class Profesional inherits Club{
 	override method casoParticular(jugador)=jugador.valorDelPase()>valorASuperar.valor()
@@ -54,12 +57,17 @@ class Equipo {
 	method somosExperimentados()=plantel.all({jugador=>jugador.partidosJugados()>=10})
 	method esPrestigioso()=self.somosExperimentados()
 	method esTrasferible(_unJugador,equipo)=(_unJugador!=capitan) and (equipo!=_unJugador.club())
+	method agregarSocio(socio){
+		plantel.add(socio)
+	}
+	method eliminarSocio(socio){
+		plantel.remove(socio)
+	}
 	method transferirJugador(_unJugador,equipo){
 		if(self.esTrasferible(_unJugador,equipo)){
-			//limpiar al jugador del club origen
-			//agregarlo al nuevo
-			//resetear sus partidos jugados
-			//La transferencia afecta a la cantidad de socios de ambos clubes 
+			_unJugador.club().eliminarSocio(_unJugador)
+			equipo.agregarSocio(_unJugador)
+			_unJugador.partidosJugados(0)
 		}
 	}
 }
@@ -86,6 +94,9 @@ class ActividadSocial {
 	method evaluacion()=if(!suspendidaPorSancion) valorDeEvaluacion else 0
 	method socioDestacado()=organizador
 	method esPrestigioso()=sociosParticipantes.count({socio=>socio.soySocioEstrella()})>=5
+	method eliminarSocio(socio){
+		sociosParticipantes.remove(socio)
+	}
 }
 class Socio{
 	var tiempoEnLaInstitucion
