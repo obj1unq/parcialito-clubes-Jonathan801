@@ -1,0 +1,33 @@
+import example.*
+describe "toda la informacion"{
+	var quilmes = new ClubProfesional(gastosDelClub=100000)
+	var goku = new Socio(tiempoEnLaInstitucion=500)
+	var pepon = new Socio(tiempoEnLaInstitucion=15)
+	var peter = new Socio(tiempoEnLaInstitucion=6)
+	var sauron = new Socio(tiempoEnLaInstitucion=1000)
+	var juanito =new Jugador(valorDelPase=5000,partidosJugados=20)
+	var messi =new Jugador(valorDelPase=55000,partidosJugados=30)
+    var ronaldo =new Jugador(valorDelPase=50000,partidosJugados=35)
+    var pepita =new Jugador(valorDelPase=1000,partidosJugados=5)
+    var equipoQuilmes = new EquipoFutbol(club=quilmes,capitan=juanito,cantCampeonatosObtenidos=5,plantel=#{messi,ronaldo,pepita})
+	var asadoLosSabados = new ActividadSocial(valorDeEvaluacion=500,organizador=messi,sociosParticipantes=#{ronaldo,goku},suspendidaPorSancion=false)
+	var miercolesDePlay = new ActividadSocial(valorDeEvaluacion=1000,organizador=pepon,sociosParticipantes=#{peter,sauron},suspendidaPorSancion=false)
+fixture {
+    juanito.equipo(equipoQuilmes)
+    ronaldo.equipo(equipoQuilmes)
+    pepita.equipo(equipoQuilmes)
+    messi.equipo(equipoQuilmes)
+    quilmes.agregarActividad(equipoQuilmes)
+    quilmes.agregarActividad(asadoLosSabados)
+    quilmes.agregarActividad(miercolesDePlay)
+}
+    
+test "messi destacado los sabados " {
+	assert.equals(messi,asadoLosSabados.socioDestacado())
+
+}
+test "juanito es el capi destacado" {
+	assert.equals(juanito,equipoQuilmes.socioDestacado())
+
+}
+}

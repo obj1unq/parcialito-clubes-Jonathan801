@@ -2,8 +2,11 @@ object valorASuperar{
 	var property valor=0
 }
 class Club{
-	var actividadesDelClub= #{}
+	var property actividadesDelClub=#{}
 	var gastosDelClub=0
+	method agregarActividad(unaActividad){
+		actividadesDelClub.add(unaActividad)
+	}
 	method condicionParaSancionIntegral()=self.cantidadDeSociosTotales()>500
 	method puntajeTotalDeEvaluacionesDeLasActividades()=actividadesDelClub.sum({actividad=>actividad.evaluacion()})
 	method cantidadDeSociosTotales()=actividadesDelClub.map({actividad=>actividad.involucrados()}).asSet().flatten().size()
@@ -25,17 +28,17 @@ class Club{
 		actividadesDelClub.forEach({actividad=>actividad.eliminarSocio(socio)})
 	}
 }
-class Profesional inherits Club{
+class ClubProfesional inherits Club{
 	override method casoParticular(jugador)=jugador.valorDelPase()>valorASuperar.valor()
 	override method evaluacionBruta()=self.puntajeTotalDeEvaluacionesDeLasActividades()*2-(gastosDelClub*5)
 }
-class Tradicional inherits Club{
+class ClubTradicional inherits Club{
 	override method casoParticular(jugador)=jugador.valorDelPase()>valorASuperar.valor() or self.aparecionesDe(jugador)>3
 	//TODO como ver que sancione a un club o a una actividad dependiendo del gusto
 	override method condicionParaSancionIntegral()=true
 	override method evaluacionBruta()=self.puntajeTotalDeEvaluacionesDeLasActividades()-gastosDelClub
 }
-class Comunitario inherits Club{
+class ClubComunitario inherits Club{
 	override method casoParticular(jugador)=self.aparecionesDe(jugador)>3
 	override method evaluacionBruta()=self.puntajeTotalDeEvaluacionesDeLasActividades()
 	
@@ -66,7 +69,7 @@ class Equipo {
 	method transferirJugador(_unJugador,equipo){
 		if(self.esTrasferible(_unJugador,equipo)){
 			_unJugador.club().eliminarSocio(_unJugador)
-			equipo.agregarJugador(_unJugador)
+			 equipo.agregarJugador(_unJugador)
 			_unJugador.partidosJugados(0)
 			_unJugador.equipo(equipo)
 		}
@@ -78,7 +81,7 @@ class EquipoFutbol inherits Equipo{
 	override method evaluacion()=super()+(self.cantDeMiembrosEstrella()*5)
 }
 class Jugador {
-	var property equipo
+	var property equipo=null
 	var valorDelPase
 	var property partidosJugados
 	method soySocioEstrella()=partidosJugados>=20 or equipo.club().casoParticular(self)
