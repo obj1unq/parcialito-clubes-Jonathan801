@@ -6,8 +6,7 @@ class Club{
 	var gastosDelClub=0
 	method condicionParaSancionIntegral()=self.cantidadDeSociosTotales()>500
 	method puntajeTotalDeEvaluacionesDeLasActividades()=actividadesDelClub.sum({actividad=>actividad.evaluacion()})
-	//TODO Revisar esta suma de abajo,ver las opciones de los conjuntos
-	method cantidadDeSociosTotales()=actividadesDelClub.sum({actividad=>actividad.involucrados().size()})
+	method cantidadDeSociosTotales()=actividadesDelClub.map({actividad=>actividad.involucrados()}).asSet().flatten().size()
 	method aparecionesDe(jugador)=actividadesDelClub.count({actividad=>actividad.estaEsteMiembro(jugador)})
 	method casoParticular(jugador)
 	method sancionar(_unaActividad){
@@ -42,6 +41,7 @@ class Comunitario inherits Club{
 	
 }
 class Equipo {
+	var property club
 	var capitan 
 	var plantel = #{capitan}
 	var cantVecesSancionado=0
@@ -57,7 +57,7 @@ class Equipo {
 	method somosExperimentados()=plantel.all({jugador=>jugador.partidosJugados()>=10})
 	method esPrestigioso()=self.somosExperimentados()
 	method esTrasferible(_unJugador,equipo)=(_unJugador!=capitan) and (equipo!=_unJugador.club())
-	method agregarSocio(socio){
+	method agregarJugador(socio){
 		plantel.add(socio)
 	}
 	method eliminarSocio(socio){
@@ -66,8 +66,9 @@ class Equipo {
 	method transferirJugador(_unJugador,equipo){
 		if(self.esTrasferible(_unJugador,equipo)){
 			_unJugador.club().eliminarSocio(_unJugador)
-			equipo.agregarSocio(_unJugador)
+			equipo.agregarJugador(_unJugador)
 			_unJugador.partidosJugados(0)
+			_unJugador.equipo(equipo)
 		}
 	}
 }
@@ -77,10 +78,10 @@ class EquipoFutbol inherits Equipo{
 	override method evaluacion()=super()+(self.cantDeMiembrosEstrella()*5)
 }
 class Jugador {
-	var property club
+	var property equipo
 	var valorDelPase
 	var property partidosJugados
-	method soySocioEstrella()=partidosJugados>=20 or club.casoParticular(self)
+	method soySocioEstrella()=partidosJugados>=20 or equipo.club().casoParticular(self)
 }
 class ActividadSocial {
 	var valorDeEvaluacion
